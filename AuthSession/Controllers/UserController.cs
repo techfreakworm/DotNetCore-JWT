@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using AuthSession.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AuthSession.Controllers
 {
@@ -12,6 +14,13 @@ namespace AuthSession.Controllers
     public class UserController : Controller
     {
         AuthSessionContext db = new AuthSessionContext();
+
+        private IConfiguration _config;
+
+        public UserController(IConfiguration config)
+        {
+            _config = config;
+        }
 
         //Login
         [Route("login")]
@@ -33,7 +42,8 @@ namespace AuthSession.Controllers
                 {
                     if (BCrypt.Net.BCrypt.Verify(password, loggedinUser.Password))
                     {
-                        return Ok(true);
+                        String tokenString = GenerateJSONWebToken(loggedinUser);
+                        return Ok(new { token = tokenString});
                     }
                 }
                 catch (Exception ex)
@@ -47,6 +57,7 @@ namespace AuthSession.Controllers
             }
             return BadRequest();
         }
+
 
         //Signup
         [Route("signup")]
@@ -66,6 +77,20 @@ namespace AuthSession.Controllers
 
             }
             return BadRequest();
+        }
+
+        private string GenerateJSONWebToken(User userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+              _config["Jwt:Issuer"],
+              null,
+              expires: DateTime.Now.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
