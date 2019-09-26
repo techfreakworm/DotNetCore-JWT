@@ -31,7 +31,7 @@ namespace AuthSession.Controllers
                 User loggedinUser = db.User.Find(email);
                 try
                 {
-                    if (loggedinUser.Password.Equals(password))
+                    if (BCrypt.Net.BCrypt.Verify(password, loggedinUser.Password))
                     {
                         return Ok(true);
                     }
