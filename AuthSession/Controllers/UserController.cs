@@ -13,7 +13,7 @@ namespace AuthSession.Controllers
     {
         AuthSessionContext db = new AuthSessionContext();
 
-        //Signup
+        //Login
         [Route("login")]
         [HttpPost]
         public IActionResult login([FromBody]dynamic loginData)
@@ -44,6 +44,25 @@ namespace AuthSession.Controllers
             catch(Exception ex)
             {
                 
+            }
+            return BadRequest();
+        }
+
+        //Signup
+        [Route("signup")]
+        [HttpPost]
+        public IActionResult singup([FromBody]User signupUser)
+        {
+            try
+            {
+                db.User.Add(signupUser);
+                db.SaveChanges();
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+
             }
             return BadRequest();
         }
