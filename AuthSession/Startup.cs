@@ -50,7 +50,7 @@ namespace AuthSession
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseAuthentication();
             app.UseMvc();
         }
     }
