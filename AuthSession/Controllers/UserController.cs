@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthSession.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace AuthSession.Controllers
 {
@@ -19,8 +20,14 @@ namespace AuthSession.Controllers
         {
             try
             {
-                string email = loginData["email"];
-                string password = loginData["password"];
+                StringValues emailValue;
+                StringValues passwordValue;
+                Request.Headers.TryGetValue("email", out emailValue);
+                Request.Headers.TryGetValue("password", out passwordValue);
+
+                String email = emailValue.FirstOrDefault();
+                String password = passwordValue.FirstOrDefault();
+                
                 User loggedinUser = db.User.Find(email);
                 try
                 {
