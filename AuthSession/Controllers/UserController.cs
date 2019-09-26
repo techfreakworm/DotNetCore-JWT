@@ -55,6 +55,7 @@ namespace AuthSession.Controllers
         {
             try
             {
+                signupUser.Password = BCrypt.Net.BCrypt.HashPassword(signupUser.Password);
                 db.User.Add(signupUser);
                 db.SaveChanges();
                 return Ok();
