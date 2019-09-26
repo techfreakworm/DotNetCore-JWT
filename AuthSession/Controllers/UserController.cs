@@ -89,12 +89,12 @@ namespace AuthSession.Controllers
             try
             {
                 var currentUser = HttpContext.User;
-
-                if (currentUser.HasClaim(c => c.Type == "Email"))
-                {
-                    String email = currentUser.Claims.FirstOrDefault(c => c.Type == "Email").Value;
-                }
-                return Ok();
+                //TODO: Make claims work, currently not working
+                //if (currentUser.HasClaim(c => c.Type == "Email"))
+                //{
+                //    String email = currentUser.Claims.FirstOrDefault(c => c.Type == "Email").Value;
+                //}
+                return Ok(new { message = "Sample page working" });
 
             }
             catch (Exception ex)
@@ -110,8 +110,8 @@ namespace AuthSession.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[] {
-        new Claim(JwtRegisteredClaimNames.Sub, userInfo.Name),
-        new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+        new Claim("Name", userInfo.Name),
+        new Claim("Email", userInfo.Email),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
     };
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
